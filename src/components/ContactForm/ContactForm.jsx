@@ -1,8 +1,8 @@
 import propTypes from 'prop-types';
-import React, { Component } from 'react';
+import { useState } from 'react';
 import css from './ContactForm.module.css';
 
-export class ContactForm extends Component {
+export const ContactForm =  {
   state = {
     name: '',
     number: '',
