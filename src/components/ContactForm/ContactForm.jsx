@@ -2,36 +2,25 @@ import propTypes from 'prop-types';
 import { useState } from 'react';
 import css from './ContactForm.module.css';
 
-export const ContactForm =  {
-  state = {
-    name: '',
-    number: '',
+export const ContactForm = ({ handleSubmit }) => {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
+
+  const onChangeInput = evt => {
+    const { name, value } = evt.currentTarget;
+
+    name === 'name' ? setName(value) : setNumber(value);
   };
 
-  handleChange = e => {
-    const { name, value } = e.target;
-    this.setState({ [name]: value });
-  };
-
-  handleSubmit = e => {
-    e.preventDefault();
-    this.props.handleSubmit(this.state);
-
-    this.resetForm();
-  };
-
-  resetForm = () => {
-    this.setState({
-      name: '',
-      number: '',
-    });
-  };
-
-  render() {
-    const { name, number } = this.state;
-
-    return (
-      <form className={css.form} onSubmit={this.handleSubmit}>
+  return (
+      <form className={css.form} 
+      onSubmit={evt => {
+            evt.preventDefault(); 
+            handleSubmit({ name, number });
+            setName(""); 
+            setNumber(""); 
+          }}
+      >
         <label className={css.formLabel}>Name </label>
         <input
           className={css.formName}
@@ -42,7 +31,7 @@ export const ContactForm =  {
           required
           placeholder="Enter name"
           value={name}
-          onChange={this.handleChange}
+          onChange={onChangeInput}
         />
         <label className={css.formLabel}>Number </label>
         <input
@@ -54,7 +43,7 @@ export const ContactForm =  {
           required
           placeholder="Enter phone number"
           value={number}
-          onChange={this.handleChange}
+          onChange={onChangeInput}
         />
         <button className={css.formBtn} type="submit">
           Add contact
@@ -62,7 +51,7 @@ export const ContactForm =  {
       </form>
     );
   }
-}
+
 
 ContactForm.propTypes = {
   handleSubmit: propTypes.func.isRequired,
