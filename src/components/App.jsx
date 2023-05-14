@@ -4,55 +4,49 @@ import { ContactForm } from './ContactForm/ContactForm';
 import { ContactList } from './ContactList/ContactList';
 import { Filter } from './Filter/Filter';
 
+const init = [
+  { id: nanoid(), name: 'Rosie Simpson', number: '459-12-56' },
+  { id: nanoid(), name: 'Hermione Kline', number: '443-89-12' },
+  { id: nanoid(), name: 'Eden Clements', number: '645-17-79' },
+  { id: nanoid(), name: 'Annie Copeland', number: '227-91-26' },
+];
+
 export const App = () => {
-  const [contacts, setContacts] = useState([
-    { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-    { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-    { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-    { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-  ]);
-
-  const [firstRenderFlag, setFlag] = useState(true);
-
-  const [filter, setFilter] = useState('');
-  useEffect(() => {}, []);
+  const [contacts, setContacts] = useState(
+    () => JSON.parse(window.localStorage.getItem('contactList')) ?? init
+  );
 
   useEffect(() => {
-    if (firstRenderFlag) {
-      const contactsFromLocalStorage = localStorage.getItem('contactList');
+    window.localStorage.setItem('contactList', JSON.stringify(contacts));
+  }, [contacts]); 
 
-      if (contactsFromLocalStorage !== 'undefined') {
-        const parsedContacts = JSON.parse(contactsFromLocalStorage);
+  const [filter, setFilter] = useState('');
+  
 
-        if (parsedContacts) {
-          setContacts(parsedContacts);
-        }
-      }
-      setFlag(false);
-    } else {
-      localStorage.setItem('contactList', JSON.stringify(contacts));
-    }
-  }, [contacts, firstRenderFlag]);
-
+  
   const handleChange = e => {
     const { value } = e.target;
     setFilter(value);
   };
 
-  const handleSubmit = e => {
-    const id = nanoid();
-    const name = e.name;
-    const number = e.number;
-    const contactsLists = [...contacts];
-
-    if (contactsLists.findIndex(contact => name === contact.name) !== -1) {
-      alert(`${name} is already in contacts.`);
-    } else {
-      contactsLists.push({ id, name, number });
-    }
-
-    setContacts(contactsLists);
+  const handleSubmit = newContact => {
+    setContacts(prevState => [...prevState, newContact]);
   };
+
+  // const handleSubmit = e => {
+  //   const id = nanoid();
+  //   const name = e.name;
+  //   const number = e.number;
+  //   const contactsLists = [...contacts];
+
+  //   if (contactsLists.findIndex(contact => name === contact.name) !== -1) {
+  //     alert(`${name} is already in contacts.`);
+  //   } else {
+  //     contactsLists.push({ id, name, number });
+  //   }
+
+  //   setContacts(contactsLists);
+  // };
 
   const handleDelete = e => {
     setContacts(contacts.filter(contact => contact.id !== e));
