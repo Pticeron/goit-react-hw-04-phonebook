@@ -4,7 +4,7 @@ import { ContactForm } from './ContactForm/ContactForm';
 import { ContactList } from './ContactList/ContactList';
 import { Filter } from './Filter/Filter';
 
-const init = [
+const initialContacts = [
   { id: nanoid(), name: 'Rosie Simpson', number: '459-12-56' },
   { id: nanoid(), name: 'Hermione Kline', number: '443-89-12' },
   { id: nanoid(), name: 'Eden Clements', number: '645-17-79' },
@@ -13,40 +13,37 @@ const init = [
 
 export const App = () => {
   const [contacts, setContacts] = useState(
-    () => JSON.parse(window.localStorage.getItem('contactList')) ?? init
+    () => JSON.parse(window.localStorage.getItem('newContact')) ?? initialContacts
   );
 
-  useEffect(() => {
-    window.localStorage.setItem('contactList', JSON.stringify(contacts));
-  }, [contacts]); 
-
   const [filter, setFilter] = useState('');
-  
 
-  
+  useEffect(() => {
+    window.localStorage.setItem('newContact', JSON.stringify(contacts));
+  }, [contacts]);
+
   const handleChange = e => {
     const { value } = e.target;
     setFilter(value);
   };
 
-  const handleSubmit = newContact => {
+  const handleSubmit = ({ name, number }) => {
+    if (
+      contacts.find(
+        contact => name.toLowerCase() === contact.name.toLowerCase()
+      )
+    ) {
+      alert(`${name} is already in contacts.`);
+      return;
+    }
+
+    const newContact = {
+      id: nanoid(),
+      name,
+      number,
+    };
     setContacts(prevState => [...prevState, newContact]);
   };
-
-  // const handleSubmit = e => {
-  //   const id = nanoid();
-  //   const name = e.name;
-  //   const number = e.number;
-  //   const contactsLists = [...contacts];
-
-  //   if (contactsLists.findIndex(contact => name === contact.name) !== -1) {
-  //     alert(`${name} is already in contacts.`);
-  //   } else {
-  //     contactsLists.push({ id, name, number });
-  //   }
-
-  //   setContacts(contactsLists);
-  // };
 
   const handleDelete = e => {
     setContacts(contacts.filter(contact => contact.id !== e));
